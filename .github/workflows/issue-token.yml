@@ -1,0 +1,49 @@
+name: صدور توکن موقتی و ذخیره در Issue
+
+on:
+  workflow_dispatch:
+    inputs:
+      password:
+        description: 'رمز چت روم'
+        required: true
+        type: string
+      session_id:
+        description: 'شناسه جلسه (برای یافتن توکن)'
+        required: true
+        type: string
+
+jobs:
+  create-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: بررسی رمز
+        run: |
+          if [ "${{ inputs.password }}" != "${{ secrets.CHAT_PASSWORD }}" ]; then
+            echo "❌ رمز اشتباه است"
+            exit 1
+          fi
+
+      - name: دریافت توکن از GitHub App
+        id: get_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          repositories: "my-secret-chat"
+
+      - name: ذخیره توکن در Issue به عنوان کامنت
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ADMIN_TOKEN }}
+          script: |
+            const sessionId = "${{ inputs.session_id }}";
+            const token = "${{ steps.get_token.outputs.token }}";
+            const issueNumber = 1;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `🔑 TOKEN_RESULT_${sessionId}: ${token}`
+            });
+            console.log(`✅ توکن برای جلسه ${sessionId} در Issue ثبت شد`);
