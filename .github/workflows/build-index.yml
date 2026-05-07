@@ -20,7 +20,7 @@ jobs:
 
       - name: Replace placeholders with secrets
         run: |
-          sed -e "s|{{SECRET_PASSWORD}}|${{ secrets.CHAT_PASSWORD }}|g" \
+          sed -e "s|{{CHAT_PASSWORD}}|${{ secrets.CHAT_PASSWORD }}|g" \
               -e "s|{{ADMIN_TOKEN}}|${{ secrets.ADMIN_TOKEN }}|g" \
               index.template.html > index.html
 
