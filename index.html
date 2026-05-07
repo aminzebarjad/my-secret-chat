@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت روم رمزدار | Icloner</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0d1117;
+            margin: 0;
+            padding: 20px;
+            color: #c9d1d9;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #161b22;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+        .chat-header {
+            background: #1f6eeb;
+            padding: 16px 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 16px;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            background: #1f242e;
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .message-user {
+            background: #1f6eeb;
+            align-self: flex-end;
+            color: white;
+        }
+        .message-other {
+            background: #2d333b;
+            align-self: flex-start;
+        }
+        .message-time {
+            font-size: 0.7rem;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+        .chat-input-area {
+            padding: 16px;
+            background: #161b22;
+            border-top: 1px solid #30363d;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 24px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: white;
+            outline: none;
+        }
+        .chat-input-area button {
+            background: #1f6eeb;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1117;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .lock-box {
+            background: #161b22;
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .lock-box input {
+            padding: 12px;
+            margin-top: 16px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: white;
+            width: 200px;
+        }
+        .error {
+            color: #f85149;
+            margin-top: 12px;
+        }
+        .status {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen">
+    <div class="lock-box">
+        <h2>🔐 چت روم رمزدار</h2>
+        <p>رمز را وارد کنید</p>
+        <input type="password" id="passwordInput" placeholder="رمز">
+        <div><button onclick="checkPassword()" style="margin-top:16px; background:#1f6eeb; border:none; padding:10px 24px; border-radius:24px; color:white; cursor:pointer;">ورود</button></div>
+        <div id="lockError" class="error"></div>
+    </div>
+</div>
+
+<div id="chatApp" style="display:none;">
+    <div class="chat-container">
+        <div class="chat-header">💬 چت روم رمزدار | Icloner</div>
+        <div class="chat-messages" id="messages">
+            <div class="status">در حال بارگذاری...</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="messageInput" placeholder="پیام خود را بنویسید...">
+            <button onclick="sendMessage()">📤 ارسال</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // تنظیمات اولیه
+    const REPO_OWNER = "aminzebarjad";
+    const REPO_NAME = "my-secret-chat";
+    const ISSUE_NUMBER = 1;
+    const SECRET_PASSWORD = "1234";
+    
+    let token = "";
+
+    function checkPassword() {
+        const pwd = document.getElementById("passwordInput").value;
+        if (pwd === SECRET_PASSWORD) {
+            document.getElementById("lockScreen").style.display = "none";
+            document.getElementById("chatApp").style.display = "block";
+            loadMessages();
+            setInterval(loadMessages, 5000);
+        } else {
+            document.getElementById("lockError").innerText = "رمز اشتباه است!";
+        }
+    }
+
+    function setToken() {
+        const t = prompt("لطفاً توکن دسترسی خود را وارد کنید:", "");
+        if (t) token = t;
+    }
+
+    async function loadMessages() {
+        try {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`;
+            const response = await fetch(url);
+            const comments = await response.json();
+            
+            const messagesDiv = document.getElementById("messages");
+            if (!Array.isArray(comments) || comments.length === 0) {
+                messagesDiv.innerHTML = '<div class="status">هنوز پیامی نیست...</div>';
+                return;
+            }
+            
+            const sorted = comments.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+            messagesDiv.innerHTML = "";
+            
+            for (let comment of sorted) {
+                let body = comment.body;
+                let decrypted = body;
+                if (body.startsWith("[ENC]")) {
+                    try {
+                        const encryptedText = body.substring(5);
+                        decrypted = encryptedText.split('').map(ch => {
+                            if (ch >= 'ا' && ch <= 'ی') {
+                                const shifted = ch.charCodeAt(0) - 1;
+                                return shifted >= 1570 ? String.fromCharCode(shifted) : 'ی';
+                            }
+                            return ch;
+                        }).join('');
+                    } catch(e) {
+                        decrypted = "⚠️ خطا در رمزگشایی";
+                    }
+                }
+                
+                const messageDiv = document.createElement("div");
+                messageDiv.className = "message " + (comment.user.login === REPO_OWNER ? "message-user" : "message-other");
+                messageDiv.innerHTML = `<div><strong>${comment.user.login}</strong></div><div>${decrypted}</div><div class="message-time">${new Date(comment.created_at).toLocaleTimeString('fa-IR')}</div>`;
+                messagesDiv.appendChild(messageDiv);
+            }
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } catch(e) {
+            console.error("خطا در دریافت پیام‌ها:", e);
+        }
+    }
+
+    async function sendMessage() {
+        const msg = document.getElementById("messageInput").value;
+        if (!msg.trim()) return;
+        
+        let encrypted = "[ENC]" + msg.split('').map(ch => {
+            if (ch >= 'ا' && ch <= 'ی') {
+                const shifted = ch.charCodeAt(0) + 1;
+                return shifted <= 1740 ? String.fromCharCode(shifted) : 'ا';
+            }
+            return ch;
+        }).join('');
+        
+        if (!token) {
+            alert("توکن تنظیم نشده! لطفاً توکن را وارد کنید.");
+            setToken();
+            return;
+        }
+        
+        try {
+            const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/vnd.github.v3+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ body: encrypted })
+            });
+            
+            if (response.ok) {
+                document.getElementById("messageInput").value = "";
+                loadMessages();
+            } else {
+                const err = await response.json();
+                alert("خطا در ارسال پیام: " + (err.message || "مشخص نیست"));
+                if (err.message === "Bad credentials") {
+                    token = "";
+                    setToken();
+                }
+            }
+        } catch(e) {
+            alert("خطا در ارتباط با سرور");
+        }
+    }
+
+    window.onload = () => {
+        setTimeout(() => {
+            if (document.getElementById("chatApp").style.display === "block") {
+                setToken();
+            }
+        }, 100);
+    };
+</script>
+</body>
+</html>
