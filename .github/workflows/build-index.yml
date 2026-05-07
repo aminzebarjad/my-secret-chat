@@ -18,11 +18,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Show secrets lengths (for debugging)
+        run: |
+          echo "CHAT_PASSWORD length: ${#CHAT_PASSWORD}"
+          echo "ADMIN_TOKEN length: ${#ADMIN_TOKEN}"
+        env:
+          CHAT_PASSWORD: ${{ secrets.CHAT_PASSWORD }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+
       - name: Replace placeholders with secrets
         run: |
           sed -e "s|{{CHAT_PASSWORD}}|${{ secrets.CHAT_PASSWORD }}|g" \
               -e "s|{{ADMIN_TOKEN}}|${{ secrets.ADMIN_TOKEN }}|g" \
               index.template.html > index.html
+          echo "=== بعد از جایگزینی، خطوط حاوی ADMIN_TOKEN در index.html ==="
+          grep -n "ADMIN_TOKEN" index.html || echo "⚠️ هیچ 'ADMIN_TOKEN' در فایل پیدا نشد (یعنی placeholder جایگزین شده یا وجود ندارد)"
+          echo "=== پنج خط اول index.html ==="
+          head -5 index.html
 
       - name: Commit and push generated index.html
         run: |
