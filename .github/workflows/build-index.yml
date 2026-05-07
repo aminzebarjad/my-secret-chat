@@ -1,0 +1,33 @@
+name: Build index.html from template
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.template.html'
+      - '.github/workflows/build-index.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Replace placeholders with secrets
+        run: |
+          sed -e "s|{{SECRET_PASSWORD}}|${{ secrets.CHAT_PASSWORD }}|g" \
+              -e "s|{{ADMIN_TOKEN}}|${{ secrets.ADMIN_TOKEN }}|g" \
+              index.template.html > index.html
+
+      - name: Commit and push generated index.html
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add index.html
+          git diff --staged --quiet || git commit -m "Update index.html from template [skip ci]"
+          git push
