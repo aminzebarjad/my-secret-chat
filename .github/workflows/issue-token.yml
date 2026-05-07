@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       session_id:
-        description: 'شناسه جلسه (برای یافتن توکن)'
+        description: 'شناسه جلسه'
         required: true
         type: string
 
@@ -31,7 +31,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           repositories: "my-secret-chat"
 
-      - name: ذخیره توکن در Issue به عنوان کامنت
+      - name: ذخیره توکن در Issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.ADMIN_TOKEN }}
@@ -39,11 +39,9 @@ jobs:
             const sessionId = "${{ inputs.session_id }}";
             const token = "${{ steps.get_token.outputs.token }}";
             const issueNumber = 1;
-            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               body: `🔑 TOKEN_RESULT_${sessionId}: ${token}`
             });
-            console.log(`✅ توکن برای جلسه ${sessionId} در Issue ثبت شد`);
