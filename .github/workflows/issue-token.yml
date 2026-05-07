@@ -34,7 +34,7 @@ jobs:
       - name: ذخیره توکن در Issue
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.ADMIN_TOKEN }}
+          github-token: ${{ steps.get_token.outputs.token }}
           script: |
             const sessionId = "${{ inputs.session_id }}";
             const token = "${{ steps.get_token.outputs.token }}";
