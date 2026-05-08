@@ -18,47 +18,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show secrets lengths and preview
+      - name: Verify secrets are not empty
         run: |
           echo "CHAT_PASSWORD length: ${#CHAT_PASSWORD}"
           echo "ADMIN_TOKEN length: ${#ADMIN_TOKEN}"
-          echo "CHAT_PASSWORD first 10 chars: ${CHAT_PASSWORD:0:10}"
-          echo "ADMIN_TOKEN first 10 chars: ${ADMIN_TOKEN:0:10}"
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "❌ ERROR: ADMIN_TOKEN secret is empty!"
+            exit 1
+          fi
         env:
           CHAT_PASSWORD: ${{ secrets.CHAT_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
 
-      - name: Replace placeholders with secrets using Python
+      - name: Replace placeholders using Python (safe method)
         run: |
           python3 -c "
           import os
-          # خواندن فایل قالب
           with open('index.template.html', 'r', encoding='utf-8') as f:
               content = f.read()
-          # جایگزینی مستقیم (بدون مشکل کاراکترهای خاص)
           content = content.replace('{{CHAT_PASSWORD}}', os.environ['CHAT_PASSWORD'])
           content = content.replace('{{ADMIN_TOKEN}}', os.environ['ADMIN_TOKEN'])
-          # نوشتن فایل نهایی
           with open('index.html', 'w', encoding='utf-8') as f:
               f.write(content)
-          print('✅ جایگزینی با موفقیت انجام شد')
+          print('✅ Replacement successful')
           "
         env:
           CHAT_PASSWORD: ${{ secrets.CHAT_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
 
-      - name: Verify replacement
+      - name: Verify no placeholders remain
         run: |
-          echo "=== بررسی وجود placeholderهای باقی‌مانده ==="
           if grep -q "{{" index.html; then
-            echo "❌ هنوز placeholder وجود دارد:"
+            echo "❌ Found remaining placeholders:"
             grep -n "{{" index.html
             exit 1
           else
-            echo "✅ هیچ placeholder باقی نمانده است"
+            echo "✅ No placeholders left"
           fi
-          echo "=== خطوط حاوی ADMIN_TOKEN در index.html ==="
-          grep -n "ADMIN_TOKEN" index.html || echo "⚠️ رشته 'ADMIN_TOKEN' در فایل یافت نشد (طبیعی است چون جایگزین شده)"
 
       - name: Commit and push generated index.html
         run: |
