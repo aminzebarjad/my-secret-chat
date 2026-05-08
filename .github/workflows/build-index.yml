@@ -1,12 +1,6 @@
-name: Build index.html from template
+name: Build simple test HTML
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'index.template.html'
-      - '.github/workflows/build-index.yml'
   workflow_dispatch:
 
 jobs:
@@ -18,48 +12,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify secrets are not empty
+      - name: Show secret length (just to check)
         run: |
-          echo "CHAT_PASSWORD length: ${#CHAT_PASSWORD}"
           echo "ADMIN_TOKEN length: ${#ADMIN_TOKEN}"
-          if [ -z "$ADMIN_TOKEN" ]; then
-            echo "❌ ERROR: ADMIN_TOKEN secret is empty!"
-            exit 1
-          fi
         env:
-          CHAT_PASSWORD: ${{ secrets.CHAT_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
 
-      - name: Replace placeholders using Python (safe method)
+      - name: Replace with Python (safe)
         run: |
           python3 -c "
           import os
-          with open('index.template.html', 'r', encoding='utf-8') as f:
+          with open('index.template.html', 'r') as f:
               content = f.read()
-          content = content.replace('{{CHAT_PASSWORD}}', os.environ['CHAT_PASSWORD'])
           content = content.replace('{{ADMIN_TOKEN}}', os.environ['ADMIN_TOKEN'])
-          with open('index.html', 'w', encoding='utf-8') as f:
+          with open('index.html', 'w') as f:
               f.write(content)
-          print('✅ Replacement successful')
+          print('✅ Done')
           "
         env:
-          CHAT_PASSWORD: ${{ secrets.CHAT_PASSWORD }}
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
 
-      - name: Verify no placeholders remain
+      - name: Show result (first 30 lines)
         run: |
-          if grep -q "{{" index.html; then
-            echo "❌ Found remaining placeholders:"
-            grep -n "{{" index.html
-            exit 1
-          else
-            echo "✅ No placeholders left"
-          fi
+          echo "=== First 30 lines of index.html ==="
+          head -30 index.html
+          echo "=== Looking for ADMIN_TOKEN line ==="
+          grep -n "ADMIN_TOKEN" index.html || echo "No ADMIN_TOKEN line found (maybe replaced)"
 
-      - name: Commit and push generated index.html
+      - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add index.html
-          git diff --staged --quiet || git commit -m "Update index.html from template [skip ci]"
+          git diff --staged --quiet || git commit -m "Update test [skip ci]"
           git push
