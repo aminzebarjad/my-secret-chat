@@ -1,310 +1,50 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>چت روم رمزدار | Icloner (حرفه‌ای با دیباگ کامل)</title>
+    <title>تست ساده توکن</title>
     <style>
-        * { box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
-        body { background: #0d1117; margin: 0; padding: 20px; color: #c9d1d9; }
-        .main-container { max-width: 1100px; margin: 0 auto; }
-        .chat-container { background: #161b22; border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
-        .chat-header { background: #1f6eeb; padding: 16px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .chat-messages { height: 350px; overflow-y: auto; padding: 16px; background: #0d1117; display: flex; flex-direction: column; gap: 12px; }
-        .message { padding: 10px 14px; border-radius: 12px; max-width: 80%; word-wrap: break-word; }
-        .message-user { background: #1f6eeb; align-self: flex-end; color: white; }
-        .message-other { background: #2d333b; align-self: flex-start; }
-        .message-time { font-size: 0.7rem; color: #8b949e; margin-top: 4px; }
-        .chat-input-area { padding: 16px; background: #161b22; border-top: 1px solid #30363d; display: flex; gap: 10px; flex-wrap: wrap; }
-        .chat-input-area input { flex: 1; padding: 12px; border-radius: 24px; border: 1px solid #30363d; background: #0d1117; color: white; }
-        .chat-input-area button { background: #1f6eeb; border: none; padding: 12px 24px; border-radius: 24px; color: white; cursor: pointer; }
-        .token-box { background: #2d333b; padding: 12px; border-radius: 8px; margin: 10px; font-family: monospace; word-break: break-all; display: none; }
-        .debug-panel { background: #161b22; border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #30363d; }
-        .section-title { font-weight: bold; margin-bottom: 12px; border-right: 3px solid #1f6eeb; padding-right: 10px; }
-        .flex-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
-        .token-input { flex: 2; padding: 8px 12px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; font-family: monospace; }
-        .btn { background: #2d333b; border: none; padding: 8px 16px; border-radius: 8px; color: white; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: #1f6eeb; }
-        .btn-success { background: #238636; }
-        .btn-danger { background: #da3633; }
-        .btn-warning { background: #d29922; }
-        .btn:hover { filter: brightness(1.1); }
-        .log-panel { background: #0a0c10; border-radius: 16px; border: 1px solid #30363d; overflow: hidden; }
-        .log-header { background: #1f242e; padding: 10px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .log-content { max-height: 300px; overflow-y: auto; padding: 12px; font-family: monospace; font-size: 12px; background: #0d1117; border-top: 1px solid #30363d; display: none; flex-direction: column; gap: 6px; }
-        .log-entry { border-bottom: 1px solid #2d333b; padding: 6px 0; word-break: break-word; }
-        .log-time { color: #8b949e; font-size: 10px; margin-right: 8px; }
-        .log-error { color: #f85149; }
-        .log-success { color: #3fb950; }
-        .log-warn { color: #d29922; }
-        .log-info { color: #58a6ff; }
-        .lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .lock-box { background: #161b22; padding: 32px; border-radius: 16px; text-align: center; }
-        .lock-box input { padding: 12px; margin-top: 16px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; width: 200px; }
-        .error-msg { color: #f85149; margin-top: 12px; }
-        .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; }
-        .modal-box { background: #161b22; border-radius: 16px; padding: 24px; max-width: 400px; text-align: center; border: 1px solid #30363d; }
-        .modal-box button { margin: 10px; padding: 8px 24px; border-radius: 24px; border: none; cursor: pointer; }
-        .modal-confirm { background: #1f6eeb; color: white; }
-        .modal-cancel { background: #2d333b; color: white; }
+        body { font-family: sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+        button { background: #1f6eeb; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; margin: 5px; }
+        pre { background: #161b22; padding: 12px; border-radius: 8px; overflow-x: auto; }
+        .box { background: #2d333b; padding: 12px; border-radius: 8px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div id="customModal" class="custom-modal">
-    <div class="modal-box">
-        <p id="modalMessage"></p>
-        <button class="modal-confirm" onclick="closeModal()">باشه</button>
-    </div>
+<h2>🔧 تست ساده توکن (بدون چت روم و بدون رمز)</h2>
+
+<button id="getTokenBtn">🔑 دریافت توکن خودکار</button>
+<button id="testTokenBtn">🔍 تست توکن ذخیره‌شده</button>
+
+<div class="box">
+    <strong>📋 نتیجه:</strong>
+    <pre id="result">منتظر اقدام شما...</pre>
 </div>
 
-<div id="lockScreen" class="lock-screen">
-    <div class="lock-box">
-        <h2>🔐 چت روم رمزدار</h2>
-        <input type="password" id="passwordInput" placeholder="رمز">
-        <div><button onclick="checkPassword()" style="margin-top:16px; background:#1f6eeb; border:none; padding:10px 24px; border-radius:24px; color:white;">ورود</button></div>
-        <div id="lockError" class="error-msg"></div>
-    </div>
-</div>
-
-<div id="chatApp" style="display:none;">
-<div class="main-container">
-    <div class="chat-container">
-        <div class="chat-header">💬 چت روم رمزدار | Icloner</div>
-        <div class="chat-messages" id="messages"><div class="status">در حال بارگذاری...</div></div>
-        <div class="chat-input-area">
-            <input type="text" id="messageInput" placeholder="پیام خود را بنویسید...">
-            <button onclick="sendMessage()">📤 ارسال</button>
-            <button onclick="requestAutoToken()" style="background:#2d333b;">🔑 دریافت توکن خودکار</button>
-        </div>
-        <div id="tokenDisplay" class="token-box"></div>
-    </div>
-
-    <div class="debug-panel">
-        <div class="section-title">🛠️ دیباگ و تست تکی</div>
-        <div class="flex-row">
-            <input type="text" id="manualToken" class="token-input" placeholder="توکن دستی خود را وارد کنید (برای تست)" dir="ltr">
-            <button class="btn btn-primary" onclick="setManualToken()">📌 ذخیره توکن دستی</button>
-            <button class="btn" onclick="testTokenValidity()">🔍 تست اعتبار توکن ذخیره‌شده</button>
-        </div>
-        <div class="flex-row">
-            <button class="btn" onclick="testReadComments()">📥 تست خواندن کامنت‌ها (عمومی)</button>
-            <button class="btn" onclick="testSendTestMessage()">📤 ارسال پیام تست با توکن فعلی</button>
-            <button class="btn btn-success" onclick="refreshMessages()">🔄 رفرش پیام‌ها</button>
-            <button class="btn btn-warning" onclick="testWorkflowDispatch()">⚙️ تست فراخوانی اکشن (workflow_dispatch)</button>
-        </div>
-        <div class="flex-row">
-            <button class="btn btn-danger" onclick="clearLog()">🗑️ پاک کردن لاگ</button>
-        </div>
-    </div>
-
-    <div class="log-panel">
-        <div class="log-header" onclick="toggleLog()">
-            <span>📋 نمایش لاگ عملیات (جزئیات کامل) ▼</span>
-            <button class="copy-log-btn" onclick="copyLog(event)" style="background:#238636;border:none;padding:4px 12px;border-radius:6px;color:white;cursor:pointer;">📋 کپی لاگ</button>
-        </div>
-        <div id="logContent" class="log-content"></div>
-    </div>
-</div>
+<div class="box">
+    <strong>🔑 توکن ذخیره‌شده در حافظه:</strong>
+    <pre id="storedToken">ندارد</pre>
 </div>
 
 <script>
-    // ========== تنظیمات ثابت (با جایگزینی از secrets در build) ==========
+    // ---------- تنظیمات (این دو خط با Secrets جایگزین می‌شوند) ----------
     const REPO_OWNER = "aminzebarjad";
     const REPO_NAME = "my-secret-chat";
-    const ISSUE_NUMBER = 1;
-    const SECRET_PASSWORD = "12345";   // از Secret CHAT_PASSWORD مقدار می‌گیرد
-    const ADMIN_TOKEN = "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";        // از Secret ADMIN_TOKEN مقدار می‌گیرد
-    // ====================================================================
+    const CHAT_PASSWORD = "12345";   // این هماهنگ با secrets.CHAT_PASSWORD
+    const ADMIN_TOKEN = "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";        // این هماهنگ با secrets.ADMIN_TOKEN
+    // -----------------------------------------------------------------
 
-    let currentUserToken = "";
-    let logEntries = [];
+    let currentToken = "";
 
-    function showModal(msg) {
-        const modal = document.getElementById("customModal");
-        document.getElementById("modalMessage").innerText = msg;
-        modal.style.visibility = "visible";
-    }
-    function closeModal() {
-        document.getElementById("customModal").style.visibility = "hidden";
-    }
-
-    function addLog(message, type = "info") {
-        const time = new Date().toLocaleTimeString('fa-IR');
-        const entry = `[${time}] ${message}`;
-        logEntries.push(entry);
-        const logDiv = document.getElementById("logContent");
-        if (logDiv) {
-            const entryDiv = document.createElement("div");
-            entryDiv.className = `log-entry log-${type}`;
-            entryDiv.innerHTML = `<span class="log-time">${time}</span> ${message}`;
-            logDiv.appendChild(entryDiv);
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-        console.log(entry);
-    }
-
-    function toggleLog() {
-        const content = document.getElementById("logContent");
-        content.style.display = content.style.display === "flex" ? "none" : "flex";
-    }
-
-    function copyLog(event) {
-        event.stopPropagation();
-        const fullLog = logEntries.join("\n");
-        navigator.clipboard.writeText(fullLog).then(() => showModal("✅ لاگ کپی شد!"));
-    }
-
-    function clearLog() {
-        logEntries = [];
-        document.getElementById("logContent").innerHTML = "";
-        addLog("لاگ پاک شد", "warn");
-    }
-
-    function setManualToken() {
-        const token = document.getElementById("manualToken").value.trim();
-        if (!token) {
-            addLog("❌ توکن وارد نشده", "error");
-            showModal("لطفاً توکن را وارد کنید.");
-            return;
-        }
-        currentUserToken = token;
-        addLog(`✅ توکن دستی ذخیره شد: ${token.substring(0,15)}...`, "success");
-        showModal("توکن با موفقیت ذخیره شد.");
-    }
-
-    async function testTokenValidity() {
-        if (!currentUserToken) {
-            addLog("❗ ابتدا توکن دستی ذخیره کنید یا از دریافت خودکار استفاده کنید", "warn");
-            showModal("ابتدا توکن را ذخیره کنید.");
-            return;
-        }
-        addLog("🔍 تست اعتبار توکن با درخواست GET به Issue (نیاز به دسترسی read)...", "info");
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments?per_page=1`, {
-                headers: { "Authorization": `Bearer ${currentUserToken}`, "Accept": "application/vnd.github.v3+json" }
-            });
-            if (res.ok) {
-                addLog(`✅ توکن معتبر است (وضعیت ${res.status})`, "success");
-                showModal("توکن معتبر است.");
-            } else {
-                const err = await res.json().catch(() => ({}));
-                addLog(`❌ توکن نامعتبر: ${res.status} - ${err.message || "بدون مجوز"}`, "error");
-                showModal(`خطا: ${res.status} - توکن نامعتبر`);
-            }
-        } catch(e) {
-            addLog(`⚠️ خطا در تست توکن: ${e.message}`, "error");
-            showModal(`خطا: ${e.message}`);
-        }
-    }
-
-    async function testReadComments() {
-        addLog("📥 تست خواندن کامنت‌های Issue (بدون توکن، عمومی)...", "info");
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`, {
-                headers: { "Accept": "application/vnd.github.v3+json" }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                addLog(`✅ موفقیت. تعداد کامنت‌ها: ${data.length}`, "success");
-                showModal(`خواندن موفق: ${data.length} کامنت`);
-            } else {
-                addLog(`❌ خطا: ${res.status}`, "error");
-                showModal(`خطا: ${res.status}`);
-            }
-        } catch(e) {
-            addLog(`❌ استثنا: ${e.message}`, "error");
-            showModal(`خطا: ${e.message}`);
-        }
-    }
-
-    async function testSendTestMessage() {
-        if (!currentUserToken) {
-            addLog("❗ توکن کاربر تنظیم نشده", "warn");
-            showModal("ابتدا توکن را ذخیره کنید.");
-            return;
-        }
-        const testMsg = `پیام تست از دیباگ در ${new Date().toLocaleTimeString()}`;
-        addLog(`📤 ارسال پیام تست: "${testMsg}"`, "info");
-        const encrypted = "[ENC]" + testMsg.split('').map(ch => {
-            if (ch >= 'ا' && ch <= 'ی') {
-                let shifted = ch.charCodeAt(0) + 1;
-                return shifted <= 1740 ? String.fromCharCode(shifted) : 'ا';
-            }
-            return ch;
-        }).join('');
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${currentUserToken}`,
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ body: encrypted })
-            });
-            if (res.ok) {
-                addLog(`✅ پیام تست ارسال شد`, "success");
-                showModal("پیام تست با موفقیت ارسال شد.");
-                await loadMessages();
-            } else {
-                const err = await res.json().catch(() => ({}));
-                addLog(`❌ ارسال ناموفق: ${res.status} - ${err.message}`, "error");
-                showModal(`خطا: ${res.status} - ${err.message}`);
-            }
-        } catch(e) {
-            addLog(`❌ خطا در ارسال: ${e.message}`, "error");
-            showModal(`خطا: ${e.message}`);
-        }
-    }
-
-    async function testWorkflowDispatch() {
-        const pwd = document.getElementById("passwordInput").value;
-        if (!pwd) {
-            showModal("ابتدا رمز چت روم را وارد کنید.");
-            return;
-        }
-        addLog(`⚙️ تست فراخوانی workflow_dispatch (issue-token.yml) با رمز`, "info");
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/issue-token.yml/dispatches`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${ADMIN_TOKEN}`,
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ ref: "main", inputs: { password: pwd, session_id: "debug_" + Date.now() } })
-            });
-            if (res.ok) {
-                addLog(`✅ workflow_dispatch فراخوانی شد (وضعیت ${res.status})`, "success");
-                showModal("اکشن با موفقیت فراخوانی شد. لاگ اکشن را بررسی کنید.");
-            } else {
-                let errMsg = "";
-                try { const e = await res.json(); errMsg = e.message; } catch(e) { errMsg = await res.text(); }
-                addLog(`❌ فراخوانی ناموفق: ${res.status} - ${errMsg}`, "error");
-                showModal(`خطا: ${res.status} - ${errMsg}`);
-            }
-        } catch(e) {
-            addLog(`❌ استثنا در فراخوانی: ${e.message}`, "error");
-            showModal(`خطا: ${e.message}`);
-        }
-    }
-
-    function generateSessionId() {
-        return "session_" + Date.now() + "_" + Math.random().toString(36).substr(2, 8);
+    function log(msg) {
+        document.getElementById("result").innerText = msg;
+        console.log(msg);
     }
 
     async function requestAutoToken() {
-        const pwd = document.getElementById("passwordInput").value;
-        if (!pwd) {
-            showModal("ابتدا رمز را وارد کنید.");
-            return;
-        }
-        const sessionId = generateSessionId();
-        addLog(`🔑 درخواست توکن خودکار با شناسه ${sessionId}`, "info");
-        const tokenBox = document.getElementById("tokenDisplay");
-        tokenBox.style.display = "block";
-        tokenBox.innerHTML = "🔄 در حال ساخت توکن... لطفاً صبر کنید.";
+        log("🔄 در حال ارسال درخواست به اکشن...");
         try {
             const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/issue-token.yml/dispatches`, {
                 method: "POST",
@@ -313,153 +53,76 @@
                     "Accept": "application/vnd.github.v3+json",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ ref: "main", inputs: { password: pwd, session_id: sessionId } })
+                body: JSON.stringify({
+                    ref: "main",
+                    inputs: { password: CHAT_PASSWORD, session_id: "simple_test_" + Date.now() }
+                })
             });
-            if (!res.ok) {
-                let errText = "";
-                try { const e = await res.json(); errText = e.message; } catch(e) { errText = await res.text(); }
-                addLog(`❌ خطا در فراخوانی اکشن: ${res.status} - ${errText}`, "error");
-                tokenBox.innerHTML = `❌ خطا: ${res.status} - ${errText.substring(0,100)}`;
-                return;
+            if (res.ok) {
+                log("✅ اکشن فراخوانی شد. برای دریافت توکن دکمه «تست توکن» را بزنید (بعد از چند ثانیه).");
+            } else {
+                let err = "";
+                try { const e = await res.json(); err = e.message; } catch(e) { err = await res.text(); }
+                log(`❌ خطا در فراخوانی اکشن: ${res.status} - ${err}`);
             }
-            addLog(`✅ اکشن فراخوانی شد، منتظر توکن...`, "success");
         } catch(e) {
-            addLog(`❌ خطا: ${e.message}`, "error");
-            tokenBox.innerHTML = `❌ خطا: ${e.message}`;
-            return;
+            log(`❌ خطا: ${e.message}`);
         }
+    }
 
-        let attempts = 0;
-        const maxAttempts = 20;
-        const interval = setInterval(async () => {
-            attempts++;
+    async function testStoredToken() {
+        if (!currentToken) {
+            // تلاش برای خواندن آخرین کامنت Issue
+            log("🔄 توکنی در حافظه نیست. در حال جستجو در Issue...");
             try {
-                const commentsRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`, {
+                const commentsRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/1/comments`, {
                     headers: { "Accept": "application/vnd.github.v3+json" }
                 });
                 const comments = await commentsRes.json();
-                const target = comments.find(c => c.body && c.body.includes(`TOKEN_RESULT_${sessionId}`));
-                if (target) {
-                    clearInterval(interval);
-                    const token = target.body.split(": ")[1];
-                    currentUserToken = token;
-                    addLog(`✅ توکن دریافت شد: ${token.substring(0,15)}... (معتبر ۱ ساعت)`, "success");
-                    tokenBox.innerHTML = `✅ توکن ساخته شد.<br><code style="background:#0d1117;padding:8px;display:block;margin:8px 0;border-radius:6px;">${token}</code>
-                    <button class="copy-btn" onclick="navigator.clipboard.writeText('${token}'); showModal('کپی شد');">📋 کپی توکن</button>
-                    <button onclick="document.getElementById('tokenDisplay').style.display='none'">✖️ بستن</button>`;
-                    return;
-                }
-                if (attempts >= maxAttempts) {
-                    clearInterval(interval);
-                    addLog(`❌ زمان انتظار پایان یافت، توکن یافت نشد`, "error");
-                    tokenBox.innerHTML = "❌ زمان انتظار تمام شد. دوباره تلاش کنید.";
+                const latest = comments.reverse().find(c => c.body && c.body.startsWith("🔑 TOKEN_RESULT_"));
+                if (latest) {
+                    const token = latest.body.split(": ")[1];
+                    if (token && token.startsWith("ghs_")) {
+                        currentToken = token;
+                        document.getElementById("storedToken").innerText = currentToken;
+                        log("✅ توکن از Issue دریافت شد. اکنون می‌توانید اعتبار آن را تست کنید.");
+                    } else {
+                        log("❌ توکن معتبری در Issue یافت نشد.");
+                    }
+                } else {
+                    log("❌ هیچ توکنی در Issue یافت نشد. ابتدا دکمه «دریافت توکن خودکار» را بزنید.");
                 }
             } catch(e) {
-                addLog(`⚠️ خطا در بررسی کامنت‌ها: ${e.message}`, "error");
+                log(`❌ خطا در خواندن Issue: ${e.message}`);
             }
-        }, 2000);
-    }
-
-    async function refreshMessages() {
-        addLog("🔄 بارگذاری مجدد پیام‌ها...", "info");
-        await loadMessages();
-    }
-
-    async function loadMessages() {
-        try {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`;
-            const res = await fetch(url, { headers: { "Accept": "application/vnd.github.v3+json" } });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const comments = await res.json();
-            const messagesDiv = document.getElementById("messages");
-            if (!comments.length) {
-                messagesDiv.innerHTML = '<div class="status">هنوز پیامی نیست...</div>';
-                return;
-            }
-            const sorted = comments.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-            messagesDiv.innerHTML = "";
-            for (const comment of sorted) {
-                if (comment.body.startsWith("🔑 TOKEN_RESULT_")) continue;
-                let body = comment.body;
-                let decrypted = body;
-                if (body.startsWith("[ENC]")) {
-                    try {
-                        decrypted = body.substring(5).split('').map(ch => {
-                            if (ch >= 'ا' && ch <= 'ی') {
-                                let shifted = ch.charCodeAt(0) - 1;
-                                return shifted >= 1570 ? String.fromCharCode(shifted) : 'ی';
-                            }
-                            return ch;
-                        }).join('');
-                    } catch(e) { decrypted = "⚠️ خطا"; }
-                }
-                const div = document.createElement("div");
-                div.className = "message " + (comment.user.login === REPO_OWNER ? "message-user" : "message-other");
-                div.innerHTML = `<div><strong>${comment.user.login}</strong></div><div>${decrypted}</div><div class="message-time">${new Date(comment.created_at).toLocaleTimeString('fa-IR')}</div>`;
-                messagesDiv.appendChild(div);
-            }
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            addLog(`✅ ${sorted.length} پیام بارگذاری شد`, "success");
-        } catch(e) {
-            addLog(`❌ خطا در بارگذاری پیام‌ها: ${e.message}`, "error");
-            document.getElementById("messages").innerHTML = `<div class="status">خطا: ${e.message}</div>`;
+            return;
         }
-    }
 
-    async function sendMessage() {
-        const msg = document.getElementById("messageInput").value.trim();
-        if (!msg) return;
-        if (!currentUserToken) {
-            const tokenFromPrompt = prompt("توکن ندارید. لطفاً توکن خود را وارد کنید (یا از دکمه دریافت خودکار استفاده کنید):");
-            if (!tokenFromPrompt) return;
-            currentUserToken = tokenFromPrompt;
-            addLog(`توکن دستی از طریق پرامپت وارد شد`, "info");
-        }
-        let encrypted = "[ENC]" + msg.split('').map(ch => {
-            if (ch >= 'ا' && ch <= 'ی') {
-                let shifted = ch.charCodeAt(0) + 1;
-                return shifted <= 1740 ? String.fromCharCode(shifted) : 'ا';
-            }
-            return ch;
-        }).join('');
+        // تست اعتبار توکن ذخیره‌شده
+        log("🔍 در حال تست اعتبار توکن...");
         try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${ISSUE_NUMBER}/comments`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${currentUserToken}`,
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ body: encrypted })
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/1/comments?per_page=1`, {
+                headers: { "Authorization": `Bearer ${currentToken}`, "Accept": "application/vnd.github.v3+json" }
             });
             if (res.ok) {
-                document.getElementById("messageInput").value = "";
-                addLog(`✅ پیام ارسال شد: ${msg.substring(0,50)}`, "success");
-                await loadMessages();
+                log(`✅ توکن معتبر است (وضعیت ${res.status})`);
             } else {
-                const err = await res.json().catch(() => ({}));
-                addLog(`❌ خطا در ارسال پیام: ${err.message || res.statusText}`, "error");
-                showModal(`خطا: ${err.message || res.status}`);
-                if (err.message === "Bad credentials") currentUserToken = "";
+                log(`❌ توکن نامعتبر: ${res.status}`);
+                if (res.status === 401) currentToken = "";
             }
         } catch(e) {
-            addLog(`❌ خطا در ارتباط: ${e.message}`, "error");
-            showModal(`خطا: ${e.message}`);
+            log(`❌ خطا: ${e.message}`);
         }
     }
 
-    function checkPassword() {
-        const pwd = document.getElementById("passwordInput").value;
-        if (pwd === SECRET_PASSWORD) {
-            document.getElementById("lockScreen").style.display = "none";
-            document.getElementById("chatApp").style.display = "block";
-            addLog("✅ رمز صحیح، وارد چت شدید", "success");
-            loadMessages();
-            setInterval(() => loadMessages(), 10000);
-        } else {
-            document.getElementById("lockError").innerText = "رمز اشتباه است!";
-            addLog(`❌ رمز اشتباه: ${pwd}`, "error");
-        }
+    document.getElementById("getTokenBtn").onclick = () => requestAutoToken();
+    document.getElementById("testTokenBtn").onclick = () => testStoredToken();
+
+    // نمایش مقدار ADMIN_TOKEN در صفحه (برای دیباگ)
+    console.log("ADMIN_TOKEN from placeholder:", ADMIN_TOKEN);
+    if (ADMIN_TOKEN === "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") {
+        console.warn("⚠️ ADMIN_TOKEN هنوز جایگزین نشده است!");
+        document.getElementById("result").innerText = "⚠️ ADMIN_TOKEN جایگزین نشده. ابتدا اکشن build-index.yml را اجرا کنید.";
     }
 </script>
 </body>
